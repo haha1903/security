@@ -1,5 +1,6 @@
-package com.datayes.paas.spring;
+package com.datayes.paas.spring.time;
 
+import com.datayes.paas.spring.JdbcRoleMutableAclService;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.security.acls.domain.AccessControlEntryImpl;
 import org.springframework.security.acls.jdbc.LookupStrategy;
@@ -44,14 +45,15 @@ public class TimeJdbcRoleMutableAclService extends JdbcRoleMutableAclService {
                         stmt.setBoolean(5, entry.isGranting());
                         stmt.setBoolean(6, entry.isAuditSuccess());
                         stmt.setBoolean(7, entry.isAuditFailure());
+                        Timestamp start = null;
+                        Timestamp end = null;
                         if (entry instanceof TimeAccessControlEntryImpl) {
                             TimeAccessControlEntryImpl timeAccessControlEntry = (TimeAccessControlEntryImpl) entry;
-                            stmt.setTimestamp(8, new Timestamp(timeAccessControlEntry.getStart().getTime()));
-                            stmt.setTimestamp(9, new Timestamp(timeAccessControlEntry.getEnd().getTime()));
-                        } else {
-                            stmt.setDate(8, null);
-                            stmt.setDate(9, null);
+                            start = new Timestamp(timeAccessControlEntry.getStart().getTime());
+                            end = new Timestamp(timeAccessControlEntry.getEnd().getTime());
                         }
+                        stmt.setTimestamp(8, start);
+                        stmt.setTimestamp(9, end);
                     }
                 });
     }

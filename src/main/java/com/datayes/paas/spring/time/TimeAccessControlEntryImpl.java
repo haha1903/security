@@ -1,4 +1,4 @@
-package com.datayes.paas.spring;
+package com.datayes.paas.spring.time;
 
 import org.springframework.security.acls.domain.AccessControlEntryImpl;
 import org.springframework.security.acls.model.Acl;
@@ -7,48 +7,43 @@ import org.springframework.security.acls.model.Sid;
 import org.springframework.util.Assert;
 
 import java.io.Serializable;
+import java.lang.reflect.Field;
 import java.util.Date;
 
 /**
  * Created by changhai on 13-11-5.
  */
 public class TimeAccessControlEntryImpl extends AccessControlEntryImpl {
-    private Permission permission;
-    private boolean auditFailure = false;
-    private boolean auditSuccess = false;
     private Date start;
     private Date end;
 
     public TimeAccessControlEntryImpl(Serializable id, Acl acl, Sid sid, Permission permission, boolean granting, boolean auditSuccess, boolean auditFailure) {
         super(id, acl, sid, permission, granting, auditSuccess, auditFailure);
-        this.permission = permission;
-        this.auditSuccess = auditSuccess;
-        this.auditFailure = auditFailure;
-    }
-
-    public Permission getPermission() {
-        return permission;
-    }
-
-    public boolean isAuditFailure() {
-        return auditFailure;
-    }
-
-    public boolean isAuditSuccess() {
-        return auditSuccess;
     }
 
     void setAuditFailure(boolean auditFailure) {
-        this.auditFailure = auditFailure;
+        setProperty("auditFailure", auditFailure);
+    }
+
+    private void setProperty(String fieldName, Object value) {
+        try {
+            Field field = AccessControlEntryImpl.class.getDeclaredField(fieldName);
+            field.setAccessible(true);
+            field.set(this, value);
+        } catch (NoSuchFieldException e) {
+            throw new RuntimeException(e);
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     void setAuditSuccess(boolean auditSuccess) {
-        this.auditSuccess = auditSuccess;
+        setProperty("auditSuccess", auditSuccess);
     }
 
     void setPermission(Permission permission) {
         Assert.notNull(permission, "Permission required");
-        this.permission = permission;
+        setProperty("permission", permission);
     }
 
     public Date getEnd() {

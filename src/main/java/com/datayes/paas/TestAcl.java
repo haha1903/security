@@ -1,7 +1,7 @@
 package com.datayes.paas;
 
 import com.datayes.paas.spring.RoleMutableAclService;
-import com.datayes.paas.spring.TimeAcl;
+import com.datayes.paas.spring.time.TimeAcl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.access.prepost.PreAuthorize;

@@ -33,7 +33,7 @@
         <property name="username" value="root"/>
         <property name="password" value=""/>
     </bean>
-    <bean id="lookupStrategy" class="com.datayes.paas.spring.TimeLookupStrategy">
+    <bean id="lookupStrategy" class="com.datayes.paas.spring.time.TimeLookupStrategy">
         <constructor-arg ref="dataSource"/>
         <constructor-arg ref="aclCache"/>
         <constructor-arg>
@@ -48,7 +48,7 @@
             </bean>
         </constructor-arg>
         <constructor-arg>
-            <bean class="com.datayes.paas.spring.TimePermissionGrantingStrategy">
+            <bean class="com.datayes.paas.spring.time.TimePermissionGrantingStrategy">
                 <constructor-arg>
                     <bean class="org.springframework.security.acls.domain.ConsoleAuditLogger"/>
                 </constructor-arg>
@@ -58,7 +58,7 @@
     <bean id="adminRole" class="org.springframework.security.core.authority.SimpleGrantedAuthority">
         <constructor-arg value="ROLE_ADMIN"/>
     </bean>
-    <bean id="aclService" class="com.datayes.paas.spring.TimeJdbcRoleMutableAclService" p:roleHierarchy-ref="roleHierarchy">
+    <bean id="aclService" class="com.datayes.paas.spring.time.TimeJdbcRoleMutableAclService" p:roleHierarchy-ref="roleHierarchy">
         <constructor-arg ref="dataSource"/>
         <constructor-arg ref="lookupStrategy"/>
         <constructor-arg ref="aclCache"/>

@@ -1,4 +1,4 @@
-package com.datayes.paas.spring;
+package com.datayes.paas.spring.time;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementSetter;
