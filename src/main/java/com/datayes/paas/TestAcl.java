@@ -1,6 +1,7 @@
 package com.datayes.paas;
 
 import com.datayes.paas.spring.RoleMutableAclService;
+import com.datayes.paas.spring.TimeAcl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -16,6 +17,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -83,13 +85,13 @@ public class TestAcl {
         authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
         UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken("Samantha", "123456", authorities);
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        MutableAcl acl = null;
+        TimeAcl acl = null;
         MutableAcl acl2 = null;
         try {
-            acl = (MutableAcl) aclService.readAclById(oi);
+            acl = (TimeAcl) aclService.readAclById(oi);
             acl2 = (MutableAcl) aclService.readAclById(oi2);
         } catch (NotFoundException nfe) {
-            acl = aclService.createAcl(oi);
+            acl = (TimeAcl) aclService.createAcl(oi);
             acl2 = aclService.createAcl(oi2);
             acl2.setParent(acl);
             aclService.updateAcl(acl2);
@@ -100,7 +102,10 @@ public class TestAcl {
 //        aclService.updateAcl(acl3);
 
         // Now grant some permissions via an access control entry (ACE)
-        acl.insertAce(acl.getEntries().size(), p, sid, true);
+        // Time Permission
+        Date start = new Date(System.currentTimeMillis() - 10000);
+        Date end = new Date(System.currentTimeMillis() + 10000);
+        acl.insertAce(acl.getEntries().size(), p, sid, true, start, end);
 //        acl2.insertAce(acl2.getEntries().size(), p, sid, true);
         aclService.updateAcl(acl);
 //        aclService.updateAcl(acl2);

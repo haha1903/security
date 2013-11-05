@@ -33,7 +33,7 @@
         <property name="username" value="root"/>
         <property name="password" value=""/>
     </bean>
-    <bean id="lookupStrategy" class="org.springframework.security.acls.jdbc.BasicLookupStrategy">
+    <bean id="lookupStrategy" class="com.datayes.paas.spring.TimeLookupStrategy">
         <constructor-arg ref="dataSource"/>
         <constructor-arg ref="aclCache"/>
         <constructor-arg>
@@ -48,13 +48,17 @@
             </bean>
         </constructor-arg>
         <constructor-arg>
-            <bean class="org.springframework.security.acls.domain.ConsoleAuditLogger"/>
+            <bean class="com.datayes.paas.spring.TimePermissionGrantingStrategy">
+                <constructor-arg>
+                    <bean class="org.springframework.security.acls.domain.ConsoleAuditLogger"/>
+                </constructor-arg>
+            </bean>
         </constructor-arg>
     </bean>
-    <bean id="adminRole" class="org.springframework.security.core.authority.GrantedAuthorityImpl">
+    <bean id="adminRole" class="org.springframework.security.core.authority.SimpleGrantedAuthority">
         <constructor-arg value="ROLE_ADMIN"/>
     </bean>
-    <bean id="aclService" class="com.datayes.paas.spring.JdbcRoleMutableAclService" p:roleHierarchy-ref="roleHierarchy">
+    <bean id="aclService" class="com.datayes.paas.spring.TimeJdbcRoleMutableAclService" p:roleHierarchy-ref="roleHierarchy">
         <constructor-arg ref="dataSource"/>
         <constructor-arg ref="lookupStrategy"/>
         <constructor-arg ref="aclCache"/>
