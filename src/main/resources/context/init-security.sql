@@ -4,8 +4,16 @@ create table acl_sid (
   id bigint not null primary key auto_increment,
   principal boolean not null,
   sid varchar(100) not null,
-  higher bigint,
   constraint unique_uk_1 unique(sid,principal) );
+
+drop table if exists acl_sid_include;
+create table acl_sid_include (
+  id bigint not null primary key auto_increment,
+  higher bigint not null,
+  lower bigint not null,
+  constraint acl_sid_include_fk_higher foreign key(higher)references acl_sid(id),
+  constraint acl_sid_include_fk_lower foreign key(lower)references acl_sid(id),
+  constraint acl_sid_include_uk unique(higher,lower) );
 
 drop table if exists acl_class;
 create table acl_class (
@@ -42,6 +50,17 @@ create table acl_entry (
   constraint foreign_fk_4 foreign key(acl_object_identity)
       references acl_object_identity(id),
   constraint foreign_fk_5 foreign key(sid) references acl_sid(id) );
+
+drop table if exists users;
+create table users (
+  username varchar(255) not null primary key,
+  password varchar(255) not null,
+  enabled boolean default true );
+
+drop table if exists authorities;
+create table authorities (
+  username varchar(255) not null primary key,
+  authority varchar(255) not null );
 
 delete from acl_class;
 delete from acl_entry;
