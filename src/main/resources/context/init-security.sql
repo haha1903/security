@@ -59,11 +59,39 @@ create table users (
 
 drop table if exists authorities;
 create table authorities (
-  username varchar(255) not null primary key,
-  authority varchar(255) not null );
+  username varchar(255) not null,
+  authority varchar(255) not null,
+  constraint authorities_fk foreign key(username)references users(username),
+  constraint authorities_uk unique(username,authority) );
 
-delete from acl_class;
-delete from acl_entry;
-delete from acl_object_identity;
-delete from acl_sid;
+drop table if exists groups;
+create table groups (
+  id bigint not null primary key auto_increment,
+  group_name varchar(50) not null);
+
+drop table if exists group_authorities;
+create table group_authorities (
+  group_id bigint not null,
+  authority varchar(50) not null,
+  constraint fk_group_authorities_group foreign key(group_id) references groups(id));
+
+drop table if exists group_members;
+create table group_members (
+  id bigint not null primary key auto_increment,
+  username varchar(50) not null,
+  group_id bigint not null,
+  constraint fk_group_members_group foreign key(group_id) references groups(id));
+
+drop table if exists persistent_logins;
+create table persistent_logins (
+  username varchar(64) not null,
+  series varchar(64) primary key,
+  token varchar(64) not null,
+  last_used timestamp not null);
+
+INSERT INTO `acl_sid` VALUES ('2', '0', 'ROLE_ADMIN'), ('1', '0', 'ROLE_USER');
+INSERT INTO `acl_sid_include` VALUES ('1', '2', '1');
+INSERT INTO `users` VALUES ('bob', 'bob', '1');
+INSERT INTO `authorities` VALUES ('bob', 'ROLE_ADMIN');
+
 set FOREIGN_KEY_CHECKS = 1;
