@@ -94,4 +94,8 @@ INSERT INTO `acl_sid_include` VALUES ('1', '2', '1');
 INSERT INTO `users` VALUES ('bob', 'bob', '1');
 INSERT INTO `authorities` VALUES ('bob', 'ROLE_ADMIN');
 
+INSERT INTO `acl_class` VALUES ('1', 'com.datayes.paas.Foo');
+INSERT INTO `acl_entry` VALUES ('1', '1', '0', '1', '1', '1', '2013-11-07 10:48:22', '2014-11-07 10:48:42', '0', '0');
+INSERT INTO `acl_object_identity` VALUES ('1', '1', '1', null, '1', '1');
+
 set FOREIGN_KEY_CHECKS = 1;

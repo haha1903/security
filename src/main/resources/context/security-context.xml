@@ -6,9 +6,11 @@
        xmlns:util="http://www.springframework.org/schema/util"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
     <sec:http pattern="/login.jsp" security="none"/>
-    <sec:http auto-config="true" access-decision-manager-ref="webAclAccessDecisionManager">
-        <sec:intercept-url pattern="/**" access="ROLE_USER"/>
+    <sec:http auto-config="true" access-decision-manager-ref="webAclAccessDecisionManager" use-expressions="true">
+        <!--<sec:intercept-url pattern="/**" access="hasRole('ROLE_USER') and fullyAuthenticated and hasIpAddress('192.168.1.1')"/>-->
+        <sec:intercept-url pattern="/**" access="hasRole('ROLE_USER') and fullyAuthenticated"/>
         <sec:form-login login-page="/login.jsp"/>
+        <sec:custom-filter ref="security" after="LAST"/>
     </sec:http>
     <sec:authentication-manager>
         <sec:authentication-provider user-service-ref="jdbcUserService"/>
@@ -18,7 +20,7 @@
         <jdbc:script location="classpath:context/init-security.sql"/>
     </jdbc:initialize-database>
     <sec:global-method-security secured-annotations="enabled" pre-post-annotations="enabled"
-                                     access-decision-manager-ref="aclAccessDecisionManager">
+                                access-decision-manager-ref="aclAccessDecisionManager">
         <sec:after-invocation-provider ref="afterAclRead"/>
         <sec:after-invocation-provider ref="afterAclCollectionRead"/>
     </sec:global-method-security>
@@ -108,6 +110,7 @@
                     <constructor-arg ref="roleHierarchy"/>
                 </bean>
                 <bean class="org.springframework.security.access.vote.AuthenticatedVoter"/>
+                <bean class="org.springframework.security.web.access.expression.WebExpressionVoter" p:expressionHandler-ref="webExpressionHandler"/>
             </list>
         </constructor-arg>
     </bean>
@@ -138,8 +141,13 @@
             <bean class="com.datayes.paas.spring.FooTypeObjectIdentityRetrievalStrategy"/>
         </property>-->
     </bean>
+    <bean id="permissionEvaluator" class="org.springframework.security.acls.AclPermissionEvaluator" p:sidRetrievalStrategy-ref="sidRetrievalStrategy">
+        <constructor-arg ref="aclService"/>
+    </bean>
     <bean id="expressionHandler" class="org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler"
-          p:roleHierarchy-ref="roleHierarchy"/>
-    <bean id="jdbcUserService" class="org.springframework.security.core.userdetails.jdbc.JdbcDaoImpl" p:dataSource-ref="dataSource"/>
-
+          p:roleHierarchy-ref="roleHierarchy" p:permissionEvaluator-ref="permissionEvaluator"/>
+    <bean id="webExpressionHandler" class="org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler"
+          p:roleHierarchy-ref="roleHierarchy" p:permissionEvaluator-ref="permissionEvaluator"/>
+    <bean id="security" class="com.datayes.paas.spring.SecurityFilter" p:expressionHandler-ref="webExpressionHandler"/>
+    <bean id="jdbcUserService" class="org.springframework.security.provisioning.JdbcUserDetailsManager" p:dataSource-ref="dataSource"/>
 </beans>
