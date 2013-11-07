@@ -26,6 +26,9 @@ read permission
 {{sec "hasPermission(1, 'com.datayes.paas.Foo', 'WRITE')"}}
 write permission
 {{/sec}}
+{{sec "hasPermission(1, 'com.datayes.paas.Foo', 'ADMINISTRATION')"}}
+admin permission
+{{/sec}}
 </script>
 <script>
 $.views.tags("sec", function(expression) {
